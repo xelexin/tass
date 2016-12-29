@@ -1,0 +1,30 @@
+import requests
+r = requests.get("https://api-v3.mojepanstwo.pl/dane/krs_podmioty")
+
+import json
+from pprint import pprint
+
+i=0
+
+id=r.json()["Dataobject"][i]["id"]
+nazwa = r.json()["Dataobject"][i]["data"]["krs_podmioty.nazwa"]
+
+
+f = open('graf.net', 'a', encoding='utf-8')
+f.write('*Vertices \n')
+
+f.write(id)
+f.write(' "')
+f.write(nazwa)
+f.write('"\n')
+
+i=1
+
+id=r.json()["Dataobject"][i]["id"]
+nazwa = r.json()["Dataobject"][i]["data"]["krs_podmioty.nazwa"]
+f.write(id)
+f.write(' "')
+f.write(nazwa)
+f.write('"\n')
+
+f.close()
