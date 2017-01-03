@@ -3,6 +3,7 @@ import sys
 import json
 import _thread
 import threading
+import os.path
 # dwa typy wierzcholkow jeden to firma, drugi to czlowiek
 # krawedzie nieskierowane pokazujace
 
@@ -58,7 +59,7 @@ def download_firm_by_id(start, end):
         dane = download_firm_id_data(i)
         dane = dane.json()
         if 'name' in dane:
-            continue
+            dane = "wywalilo"
         firms[i] = str(dane)
     save_dictionary(firms, "firms_id_"+str(start)+"_"+str(end))
 
@@ -113,8 +114,24 @@ def run_download_firm():
             print(e)
 
 
+def run_download_firm_again():
+	size = 800000
+	threads = 64
+	sizeofdownload = size/threads
 
-
+	for i in range(0,threads):
+		if os.path.isfile("firms_id_"+str(sizeofdownload*i)+"_"+str(sizeofdownload*(i+1))):
+			print("firms_id_"+str(sizeofdownload*i)+"_"+str(sizeofdownload*(i+1))+" istnieje")
+		else:
+			print("firms_id_"+str(sizeofdownload*i)+"_"+str(sizeofdownload*(i+1))+" nie ma")
+			print("odpalam watek")
+			try:
+				absc = threading.Thread(target=download_firm_by_id, args=(sizeofdownload*i, sizeofdownload*(i+1)))
+				absc.start()
+			except Exception as e:
+				import traceback
+				traceback.format_exc()
+				print(e)
 
 #download_limit = 1000
 #firms = {}
@@ -127,8 +144,8 @@ def run_download_firm():
 #firms = download_firm_by_id()
 #print(len(firms))
 #save_dictionary(firms, "firmyid.dat")
-run_download_firm()
-
+#run_download_firm()
+run_download_firm_again()
 #persons = download_person()
 #save_dictionary(persons, "ludzie.dat")
 #persons = read_dictionary("ludzie.dat")
